@@ -1,44 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Drawing App</title>
-    <!-- Google Font -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div id="paintArea">
-      <canvas id="canvas"></canvas>
-    </div>
-    <div class="options">
-      <div class="tools" id="tools-section">
-        <div class="tools-row">
-          <div class="tools-wrapper">
-            <h5><span id="tool-type"></span> Size:</h5>
-            <input type="range" id="pen-slider" value="4" />
-          </div>
-          <div class="tools-wrapper">
-            <h5>Color:</h5>
-            <input type="color" id="color-input" />
-          </div>
-          <div class="tools-wrapper">
-            <h5>Background Color:</h5>
-            <input type="color" id="color-background" />
-          </div>
-        </div>
-        <div class="tools-row">
-          <button id="button-clear">Clear</button>
-          <button id="button-pen">Pen</button>
-          <button id="button-erase">Erase</button>
-        </div>
-      </div>
-    </div>
-    <!-- Script-->
-    <script src="main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas Drawing App</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="500" height="500"></canvas>
+  <div>
+    <label for="color-picker">Color:</label>
+    <input type="color" id="color-picker" value="#000000">
+    <label for="line-width">Line Width:</label>
+    <input type="range" id="line-width" min="1" max="50" value="10">
+    <button id="clear-button">Clear</button>
+    <button id="save-button">Save</button>
+  </div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      draw({ offsetX: e.offsetX, offsetY: e.offsetY });
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('mouseout', () => isDrawing = false);
+
+    function draw({ offsetX, offsetY }) {
+      context.beginPath();
+      context.moveTo(lastX, lastY);
+      context.lineTo(offsetX, offsetY);
+      context.stroke();
+    }
+
+    const colorPicker = document.getElementById('color-picker');
+    const lineWidth = document.getElementById('line-width');
+    const clearButton = document.getElementById('clear-button');
+    const saveButton = document.getElementById('save-button');
+
+    colorPicker.addEventListener('change', () => {
+      context.strokeStyle = colorPicker.value;
+    });
+
+    lineWidth.addEventListener('input', () => {
+      context.lineWidth = lineWidth.value;
+    });
+
+    clearButton.addEventListener('click', () => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    saveButton.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'drawing.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      isDrawing = true;
+      [lastX, lastY] = [e.touches[0].clientX, e.touches[0].clientY];
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      draw({
+        offsetX: e.touches[0].clientX,
+        offsetY: e.touches[0].clientY
+      });
+    });
+
+    canvas.addEventListener('touchend', () => isDrawing = false);
+  </script>
+</body>
 </html>
