@@ -16,6 +16,10 @@ window.addEventListener("mousedown", (e) => draw = true)
 // Set draw to false when mouse is released
 window.addEventListener("mouseup", (e) => draw = false)
 
+window.addEventListener("touchstart", (e) => draw = true)
+
+window.addEventListener("touchend", (e) => draw=false)
+
 window.addEventListener("mousemove", (e) => {
     // if draw is false then we won't draw
     if(prevX == null || prevY == null || !draw){
