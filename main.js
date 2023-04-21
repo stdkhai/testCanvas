@@ -20,6 +20,25 @@ window.addEventListener("touchstart", (e) => draw = true)
 
 window.addEventListener("touchend", (e) => draw=false)
 
+window.addEventListener("touchmove", (e)=>{
+    if(prevX == null || prevY == null || !draw){
+        prevX = e.clientX
+        prevY = e.clientY
+        return
+    }
+
+    let currentX = e.clientX
+    let currentY = e.clientY
+
+    ctx.beginPath()
+    ctx.moveTo(prevX, prevY)
+    ctx.lineTo(currentX, currentY)
+    ctx.stroke()
+
+    prevX = currentX
+    prevY = currentY
+});
+
 window.addEventListener("mousemove", (e) => {
     // if draw is false then we won't draw
     if(prevX == null || prevY == null || !draw){
